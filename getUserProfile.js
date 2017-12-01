@@ -12,25 +12,28 @@ function printMessage(username, badgeCount, points) {
 
 function getProfile(username) {
   // Connect to the API URL (https://teamtreehouse.com/username.json)
-  const request = https.get(`https://teamtreehouse.com/${username}.json`, response => {
-                              let body = "";
-                              //console.log(response.statusCode);
-                              
-                              // Read the data
-                              response.on('data', data => {
-                                body += data.toString();
-                              });
-  
-                              response.on('end', () => {
-                                // Parse the data
-                                const profile = JSON.parse(body);
-                                //console.dir(profile);
-                                // Print the data
-                                printMessage(profile.profile_name, profile.badges.length, profile.points.JavaScript);
-                              });
-                            
-   
-                            });
+  try {
+    const request = https.get(`https://teamtreehouse.com/${username}.json`, response => {
+                                let body = "";
+                                //console.log(response.statusCode);
+                                
+                                // Read the data
+                                response.on('data', data => {
+                                  body += data.toString();
+                                });
+    
+                                response.on('end', () => {
+                                  // Parse the data
+                                  const profile = JSON.parse(body);
+                                  //console.dir(profile);
+                                  // Print the data
+                                  printMessage(profile.profile_name, profile.badges.length, profile.points.JavaScript);
+                                });
+                              });    
+                              request.on('error', error => console.error(`Problem with request: ${error.message}`));
+  } catch (error) {
+    console.error(error.message)
+  }
 }
 
 const users = process.argv.slice(2);
