@@ -9,12 +9,12 @@ function printError(error) {
 
 
 //Function to print message to console
-function printMessage(username, badgeCount, points) {
-  const message = `${username} has ${badgeCount} total badge(s) and ${points} points in JavaScript`;
+function printMessage(username, badgeCount, points, subject) {
+  const message = `${username} has ${badgeCount} total badge(s) and ${points} points in ${subject}`;
   console.log(message);
 }
 
-function get(username) {
+function get(username, subject) {
   // Connect to the API URL (https://teamtreehouse.com/username.json)
   try {
     const request = https.get(`https://teamtreehouse.com/${username}.json`, response => {
@@ -30,9 +30,22 @@ function get(username) {
                                     try {
                                       // Parse the data
                                       const profile = JSON.parse(body);
-                                      //console.dir(profile);
+                                      // Get key/value array of subject/points
+                                      const profilePointsArray = Object.entries(profile.points);
+                                      // Iterate through array and find our specified subject
+                                      let subjectPoints;
+                                      profilePointsArray.forEach(element => {
+                                        if (element[0] === subject[0]) {
+                                          subjectPoints = element[1];
+                                        }
+                                      });
+                                      //Handle invalid subjects
+                                      if (subjectPoints === undefined) {
+                                        console.error(`'${subject}' is not a valid subject.`);
+                                        process.exit()
+                                      }
                                       // Print the data
-                                      printMessage(profile.profile_name, profile.badges.length, profile.points.JavaScript);                                    
+                                      printMessage(profile.profile_name, profile.badges.length, subjectPoints, subject);                                    
                                     } catch (error) {
                                       printError(error);
                                     }
